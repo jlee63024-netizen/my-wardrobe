@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的衣橱</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F1EB;
+  --surface: #FDFAF6;
+  --surface2: #F0EBE3;
+  --border: #DDD6CC;
+  --border2: #C8BFB2;
+  --text: #28201A;
+  --text2: #6B5C52;
+  --text3: #9C8E86;
+  --accent: #7C5C48;
+  --accent-light: #E8DDD5;
+  --tag-work-bg: #EBF0F5; --tag-work: #2A4A6A;
+  --tag-daily-bg: #F5EBF0; --tag-daily: #6A2A4A;
+  --tag-inspo-bg: #EBF5EE; --tag-inspo: #2A5A38;
+  --good: #3A6B4A; --good-bg: #E8F2EC;
+  --ok: #7A5C1A; --ok-bg: #F5EEE0;
+  --bad: #6B2A2A; --bad-bg: #F5E8E8;
+  --r: 14px; --r-sm: 9px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;font-weight:300}
+.app{max-width:460px;margin:0 auto;padding-bottom:80px}
+
+/* Header */
+.hdr{padding:32px 22px 18px;background:var(--surface);border-bottom:1px solid var(--border)}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;letter-spacing:0.02em;color:var(--text)}
+.hdr-sub{font-size:12px;color:var(--text3);margin-top:3px;letter-spacing:0.08em;text-transform:uppercase;font-weight:400}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 22px;background:var(--surface);border-bottom:1px solid var(--border)}
+.stat{background:var(--bg);border-radius:var(--r-sm);padding:12px 8px;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;line-height:1;color:var(--text)}
+.stat-n.g{color:var(--good)}
+.stat-l{font-size:10px;color:var(--text3);margin-top:3px;letter-spacing:0.06em;text-transform:uppercase}
+
+/* Nav */
+.nav{display:flex;padding:10px 22px;gap:5px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.nb{flex:1;padding:7px 3px;font-size:11px;font-family:'Jost',sans-serif;font-weight:400;border:1px solid var(--border);background:transparent;cursor:pointer;border-radius:99px;color:var(--text3);transition:all 0.18s;letter-spacing:0.06em;text-transform:uppercase}
+.nb.active{background:var(--text);color:var(--surface);border-color:var(--text);font-weight:500}
+
+/* Pages */
+.page{display:none;padding:18px 22px}.page.active{display:block}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:14px;color:var(--text)}
+
+/* Form */
+input,textarea,select{width:100%;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;font-size:13px;font-family:'Jost',sans-serif;font-weight:300;background:var(--bg);color:var(--text);resize:none;outline:none;transition:border-color 0.2s}
+input:focus,textarea:focus{border-color:var(--accent)}
+.lbl{font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:7px;display:block;font-weight:400}
+
+/* Upload */
+.upload{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--border2);border-radius:var(--r-sm);padding:13px;font-size:12px;color:var(--text3);cursor:pointer;margin-bottom:12px;transition:all 0.2s;background:var(--bg);letter-spacing:0.03em}
+.upload:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.upload-plus{width:18px;height:18px;border:1px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;flex-shrink:0}
+
+/* Tags */
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+.tag{display:inline-block;font-size:11px;padding:4px 11px;border-radius:99px;cursor:pointer;border:1px solid transparent;transition:all 0.15s;letter-spacing:0.04em;font-weight:400}
+.tag.work{background:var(--tag-work-bg);color:var(--tag-work)}
+.tag.daily{background:var(--tag-daily-bg);color:var(--tag-daily)}
+.tag.inspo{background:var(--tag-inspo-bg);color:var(--tag-inspo)}
+.tag.off{opacity:0.3}
+.tag.on{opacity:1;border-color:currentColor;font-weight:500}
+
+/* Rating */
+.rb-row{display:flex;gap:7px;margin:8px 0 14px}
+.rb{flex:1;padding:9px 5px;font-size:12px;font-family:'Jost',sans-serif;border:1px solid var(--border);border-radius:var(--r-sm);background:transparent;cursor:pointer;color:var(--text2);transition:all 0.15s;letter-spacing:0.03em}
+.rb:hover{background:var(--bg)}
+.rb.g{background:var(--good-bg);color:var(--good);border-color:#B8D8C0;font-weight:500}
+.rb.o{background:var(--ok-bg);color:var(--ok);border-color:#D8C890;font-weight:500}
+.rb.b{background:var(--bad-bg);color:var(--bad);border-color:#D8A8A8;font-weight:500}
+
+/* Buttons */
+.btn{width:100%;padding:11px;font-size:13px;font-family:'Jost',sans-serif;font-weight:500;border:1px solid var(--text);border-radius:var(--r-sm);background:var(--text);color:var(--surface);cursor:pointer;transition:all 0.2s;letter-spacing:0.04em}
+.btn:hover{background:var(--accent);border-color:var(--accent)}
+.btn.ghost{background:transparent;color:var(--text)}
+.btn.ghost:hover{background:var(--bg)}
+
+/* Archive */
+.filter-row{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fb{padding:5px 13px;font-size:11px;font-family:'Jost',sans-serif;border:1px solid var(--border);border-radius:99px;background:transparent;cursor:pointer;color:var(--text3);transition:all 0.15s;letter-spacing:0.05em;text-transform:uppercase}
+.fb.active{background:var(--text);color:var(--surface);border-color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.oc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.ot{width:100%;aspect-ratio:3/4;background:var(--bg);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.ot img{width:100%;height:100%;object-fit:cover}
+.odot{position:absolute;top:9px;right:9px;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--surface)}
+.dg{background:var(--good)}.do{background:var(--ok)}.db{background:var(--bad)}
+.om{padding:9px 11px}
+.odate{font-size:10px;color:var(--text3);letter-spacing:0.04em}
+.onote{font-size:12px;color:var(--text2);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Inspo */
+.ic{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start}
+.ii{width:54px;height:54px;border-radius:var(--r-sm);background:var(--bg);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+.ii img{width:100%;height:100%;object-fit:cover}
+
+/* AI */
+.ai-auto{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.ai-auto-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ai-pulse{width:8px;height:8px;background:var(--good);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.ai-auto-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text)}
+.ai-finding{background:var(--bg);border-radius:var(--r-sm);padding:12px 14px;font-size:13px;color:var(--text);line-height:1.75;margin-bottom:8px;white-space:pre-wrap;min-height:48px}
+.ai-finding.loading{color:var(--text3)}
+
+.quick-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.qb{padding:10px 5px;font-size:11px;font-family:'Jost',sans-serif;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);cursor:pointer;color:var(--text2);text-align:center;line-height:1.5;transition:all 0.15s;letter-spacing:0.02em}
+.qb:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.qb.active{background:var(--text);color:var(--surface);border-color:var(--text)}
+
+.ai-out{background:var(--bg);border-radius:var(--r-sm);padding:14px;font-size:13px;color:var(--text);line-height:1.8;white-space:pre-wrap;display:none;margin-top:10px;border:1px solid var(--border)}
+.ai-out.show{display:block}
+
+/* Profile */
+.profile-chips{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.pc{display:inline-block;font-size:11px;padding:4px 11px;background:var(--accent-light);color:var(--accent);border-radius:99px;border:1px solid #D4C4B8;letter-spacing:0.03em}
+.profile-input-area{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font-size:13px;line-height:1.7;color:var(--text2);margin:10px 0;min-height:70px}
+.profile-edit{display:none}.profile-edit.show{display:block}
+
+/* Divider */
+.div{height:1px;background:var(--border);margin:13px 0}
+
+/* Spinner */
+.spin{display:inline-block;width:13px;height:13px;border:1.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp 0.65s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Empty */
+.empty{text-align:center;padding:36px 16px;color:var(--text3);font-size:13px;line-height:1.7;font-weight:300}
+
+/* Notification */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--surface);padding:10px 20px;border-radius:99px;font-size:13px;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:0.03em;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:100;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FDFAF6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="我的衣橱">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-title">我的衣橱</div>
+    <div class="hdr-sub">记录 · 发现 · 少买少退</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s-total">0</div><div class="stat-l">穿搭</div></div>
+    <div class="stat"><div class="stat-n g" id="s-good">0</div><div class="stat-l">好看</div></div>
+    <div class="stat"><div class="stat-n" id="s-ratio">—</div><div class="stat-l">命中率</div></div>
+  </div>
+  <div class="nav">
+    <button class="nb active" onclick="go('log',this)">记录</button>
+    <button class="nb" onclick="go('archive',this)">穿搭</button>
+    <button class="nb" onclick="go('inspo',this)">灵感</button>
+    <button class="nb" onclick="go('profile',this)">风格</button>
+    <button class="nb" onclick="go('ai',this)">AI</button>
+  </div>
+
+  <!-- 记录 -->
+  <div id="page-log" class="page active">
+    <div class="card">
+      <div class="card-title">今日穿搭</div>
+      <label class="upload" for="lp"><span class="upload-plus">+</span><span id="lp-label">上传穿搭照片（可选）</span><input type="file" id="lp" accept="image/*" style="display:none"></label>
+      <span class="lbl">场景</span>
+      <div class="tag-row">
+        <span class="tag work on" id="lt-w" onclick="setLT('work')">职场简约</span>
+        <span class="tag daily off" id="lt-d" onclick="setLT('daily')">日常清新</span>
+      </div>
+      <textarea id="ln" rows="2" placeholder="描述这套穿搭，比如：米色西装 + 白衬衫，气场感很强"></textarea>
+      <span class="lbl" style="margin-top:12px">镜头里好看吗？</span>
+      <div class="rb-row">
+        <button class="rb" id="rb-g" onclick="setR('g')">好看</button>
+        <button class="rb" id="rb-o" onclick="setR('o')">一般</button>
+        <button class="rb" id="rb-b" onclick="setR('b')">不太行</button>
+      </div>
+      <button class="btn" onclick="addLog()">记录这套穿搭</button>
+    </div>
+  </div>
+
+  <!-- 穿搭档案 -->
+  <div id="page-archive" class="page">
+    <div class="filter-row">
+      <button class="fb active" onclick="setF('all',this)">全部</button>
+      <button class="fb" onclick="setF('work',this)">职场</button>
+      <button class="fb" onclick="setF('daily',this)">日常</button>
+      <button class="fb" onclick="setF('g',this)">好看</button>
+    </div>
+    <div class="grid" id="ag"><div class="empty" style="grid-column:1/-1">还没有穿搭记录<br>去「记录」添加第一套吧</div></div>
+  </div>
+
+  <!-- 灵感板 -->
+  <div id="page-inspo" class="page">
+    <div class="card">
+      <div class="card-title">添加灵感</div>
+      <label class="upload" for="ip"><span class="upload-plus">+</span><span id="ip-label">上传灵感图片（可选）</span><input type="file" id="ip" accept="image/*" style="display:none"></label>
+      <div class="tag-row">
+        <span class="tag inspo on" id="it-i" onclick="setIT('inspo')">灵感参考</span>
+        <span class="tag work off" id="it-w" onclick="setIT('work')">职场</span>
+        <span class="tag daily off" id="it-d" onclick="setIT('daily')">日常</span>
+      </div>
+      <textarea id="inn" rows="2" placeholder="记录穿搭 idea，比如：奶白色长款西装 + 同色系阔腿裤，极简贵气"></textarea>
+      <button class="btn" style="margin-top:11px" onclick="addInspo()">保存灵感</button>
+    </div>
+    <div id="il"><div class="empty">还没有灵感<br>开始收集你的风格参考吧</div></div>
+  </div>
+
+  <!-- 风格档案 -->
+  <div id="page-profile" class="page">
+    <div class="card">
+      <div class="card-title">我的风格档案</div>
+      <div id="profile-chips-area">
+        <div class="profile-chips" id="pchips"></div>
+        <div style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:12px" id="profile-summary-text"></div>
+      </div>
+      <button class="btn ghost" onclick="toggleProfileEdit()" id="edit-btn">用自然语言更新档案</button>
+      <div class="profile-edit" id="profile-edit-area">
+        <div class="div"></div>
+        <span class="lbl">用你自己的话描述一下</span>
+        <textarea id="profile-input" rows="4" placeholder="比如：我162cm，43kg，肩比较窄，皮肤黄黄的不白。上班要穿得专业有气场，平时喜欢清新一点带点贵气的感觉。简单款式穿在我身上总感觉很普通，需要有设计感的才好看..."></textarea>
+        <button class="btn" style="margin-top:10px" onclick="extractProfile()"><span id="ep-txt">AI 提炼风格标签</span></button>
+      </div>
+    </div>
+    <div class="card" style="font-size:12px;color:var(--text3);line-height:1.8">
+      风格档案会被所有 AI 建议参考。每次更新后，AI 的回答会更贴合你的实际情况。
+    </div>
+  </div>
+
+  <!-- AI 建议 -->
+  <div id="page-ai" class="page">
+    <div id="key-section" class="card" style="margin-bottom:12px">
+      <div class="card-title">MiniMax API Key</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:10px">
+        申请地址：<strong style="color:var(--text2)">platform.minimax.io</strong> → 账户管理 → API Keys<br>
+        注册后有免费额度，Key 仅保存在本地浏览器，不会上传。
+      </div>
+      <div id="key-input-row" style="display:flex;gap:7px">
+        <input type="password" id="mm-key" placeholder="填入你的 MiniMax API Key">
+        <button class="btn" style="width:auto;padding:0 14px;white-space:nowrap" onclick="saveMMKey()">保存</button>
+      </div>
+      <div id="key-saved-row" style="display:none;align-items:center;gap:7px;font-size:12px;color:var(--good)">
+        <div style="width:7px;height:7px;background:var(--good);border-radius:50%;flex-shrink:0"></div>
+        Key 已保存 &nbsp;·&nbsp;
+        <span style="cursor:pointer;text-decoration:underline" onclick="clearMMKey()">清除重填</span>
+      </div>
+    </div>
+    <div class="ai-auto" id="auto-analysis">
+      <div class="ai-auto-head">
+        <div class="ai-pulse"></div>
+        <div class="ai-auto-title">AI 主动分析</div>
+      </div>
+      <div class="ai-finding" id="auto-out">点击下方按钮，AI 会根据你的穿搭记录主动发现问题</div>
+      <button class="btn ghost" style="margin-top:8px" onclick="runAutoAnalysis()">分析我的穿搭规律 ↗</button>
+    </div>
+
+    <div class="card">
+      <span class="lbl">快捷问题</span>
+      <div class="quick-btns">
+        <button class="qb" onclick="ask('outfit',this)">今天<br>穿什么</button>
+        <button class="qb" onclick="ask('gap',this)">我还缺<br>什么单品</button>
+        <button class="qb" onclick="ask('buy',this)">帮我判断<br>值不值得买</button>
+      </div>
+      <div class="div"></div>
+      <span class="lbl">自定义提问</span>
+      <textarea id="ai-q" rows="2" placeholder="比如：明天有重要会议，怎么穿才有领导力感？"></textarea>
+      <button class="btn" style="margin-top:10px" onclick="askCustom()">发送 ↗</button>
+      <div class="ai-out" id="ai-out"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_PROFILE = {
+  raw: "162cm，43kg，肩窄，头稍大，肤色偏黄不白。职场：轻职场法式简约，奶白米色系，有领导力感。日常：清新贵气，小碎花有结构感。需靠领型袖型面料出彩，忌无版型软塌款。身材娇小，对质量要求高。",
+  chips: ["162cm · 43kg","肩窄 · 头稍大","浅色系","职场简约","日常清新贵气","重版型质感","忌深色无结构"]
+};
+
+let logs=[], inspos=[];
+let logTag='work', logRating=null, logPhoto=null;
+let inspoTag='inspo', inspoPhoto=null;
+let archiveFilter='all';
+let profile = JSON.parse(localStorage.getItem('wProfile')||'null') || DEFAULT_PROFILE;
+
+function getProfileText(){ return profile.raw || DEFAULT_PROFILE.raw; }
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function go(p,el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  el.classList.add('active');
+  if(p==='profile') renderProfile();
+}
+
+function setLT(t){
+  logTag=t;
+  document.getElementById('lt-w').className='tag work '+(t==='work'?'on':'off');
+  document.getElementById('lt-d').className='tag daily '+(t==='daily'?'on':'off');
+}
+function setR(r){
+  logRating=r;
+  ['g','o','b'].forEach(v=>document.getElementById('rb-'+v).className='rb'+(v===r?' '+v:''));
+}
+document.getElementById('lp').onchange=function(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{logPhoto=ev.target.result;document.getElementById('lp-label').textContent='已上传：'+f.name};r.readAsDataURL(f);
+};
+document.getElementById('ip').onchange=function(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=ev=>{inspoPhoto=ev.target.result;document.getElementById('ip-label').textContent='已上传：'+f.name};r.readAsDataURL(f);
+};
+
+function addLog(){
+  const note=document.getElementById('ln').value.trim();
+  if(!note&&!logPhoto){toast('请描述穿搭或上传照片');return;}
+  if(!logRating){toast('请选择镜头里好不好看');return;}
+  const now=new Date();
+  logs.unshift({tag:logTag,note:note||'（无备注）',rating:logRating,date:(now.getMonth()+1)+'/'+(now.getDate()),photo:logPhoto});
+  document.getElementById('ln').value='';
+  document.getElementById('lp-label').textContent='上传穿搭照片（可选）';
+  document.getElementById('lp').value='';
+  logPhoto=null;logRating=null;
+  ['g','o','b'].forEach(v=>document.getElementById('rb-'+v).className='rb');
+  updateStats();renderArchive();toast('已记录！');
+}
+
+function updateStats(){
+  const g=logs.filter(r=>r.rating==='g').length;
+  document.getElementById('s-total').textContent=logs.length;
+  document.getElementById('s-good').textContent=g;
+  document.getElementById('s-ratio').textContent=logs.length?Math.round(g/logs.length*100)+'%':'—';
+}
+
+function setF(f,el){
+  archiveFilter=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');renderArchive();
+}
+
+function renderArchive(){
+  const g=document.getElementById('ag');
+  let arr=logs;
+  if(archiveFilter==='work')arr=logs.filter(r=>r.tag==='work');
+  else if(archiveFilter==='daily')arr=logs.filter(r=>r.tag==='daily');
+  else if(archiveFilter==='g')arr=logs.filter(r=>r.rating==='g');
+  if(!arr.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">没有符合条件的穿搭</div>';return;}
+  g.innerHTML=arr.map(r=>{
+    const dc=r.rating==='g'?'dg':r.rating==='o'?'do':'db';
+    const tc=r.tag==='work'?'work':'daily';
+    const tl=r.tag==='work'?'职场':'日常';
+    const thumb=r.photo?`<img src="${r.photo}">`:`<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M8 6C8 6 9.5 9 14 9C18.5 9 20 6 20 6L22 9L19 12V22H9V12L6 9L8 6Z" stroke="#C8BFB2" stroke-width="1.3" fill="none"/></svg>`;
+    return `<div class="oc"><div class="ot">${thumb}<div class="odot ${dc}"></div></div><div class="om"><div class="odate">${r.date} &nbsp;<span class="tag ${tc} on" style="font-size:10px;padding:2px 8px;margin:0">${tl}</span></div><div class="onote">${r.note}</div></div></div>`;
+  }).join('');
+}
+
+function setIT(t){
+  inspoTag=t;
+  ['i','w','d'].forEach((v,i)=>{
+    const tags=['inspo','work','daily'];
+    document.getElementById('it-'+v).className='tag '+tags[i]+' '+(tags[i]===t?'on':'off');
+  });
+}
+
+function addInspo(){
+  const note=document.getElementById('inn').value.trim();
+  if(!note&&!inspoPhoto){toast('请写下灵感或上传图片');return;}
+  inspos.unshift({tag:inspoTag,note:note||'（图片灵感）',photo:inspoPhoto});
+  document.getElementById('inn').value='';
+  document.getElementById('ip-label').textContent='上传灵感图片（可选）';
+  document.getElementById('ip').value='';
+  inspoPhoto=null;renderInspo();toast('已保存！');
+}
+
+function renderInspo(){
+  const l=document.getElementById('il');
+  if(!inspos.length){l.innerHTML='<div class="empty">还没有灵感<br>开始收集你的风格参考吧</div>';return;}
+  const tm={inspo:'灵感参考',work:'职场',daily:'日常'};
+  const tc={inspo:'inspo',work:'work',daily:'daily'};
+  l.innerHTML=inspos.map(r=>{
+    const thumb=r.photo?`<img src="${r.photo}">`:`<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="3" stroke="#C8BFB2" stroke-width="1.2"/><path d="M2 15L7 10L11 14L15 10L20 15" stroke="#C8BFB2" stroke-width="1.2" fill="none"/></svg>`;
+    return `<div class="ic"><div class="ii">${thumb}</div><div style="flex:1;min-width:0"><span class="tag ${tc[r.tag]} on" style="font-size:10px;padding:3px 9px;margin:0 0 5px;display:inline-block">${tm[r.tag]}</span><div style="font-size:12px;color:var(--text2);line-height:1.6">${r.note}</div></div></div>`;
+  }).join('');
+}
+
+function renderProfile(){
+  const chips=document.getElementById('pchips');
+  const summary=document.getElementById('profile-summary-text');
+  chips.innerHTML=(profile.chips||DEFAULT_PROFILE.chips).map(c=>`<span class="pc">${c}</span>`).join('');
+  summary.textContent=profile.raw||'';
+}
+
+function toggleProfileEdit(){
+  const area=document.getElementById('profile-edit-area');
+  const btn=document.getElementById('edit-btn');
+  const showing=area.classList.contains('show');
+  area.classList.toggle('show');
+  btn.textContent=showing?'用自然语言更新档案':'收起';
+}
+
+async function extractProfile(){
+  const input=document.getElementById('profile-input').value.trim();
+  if(!input){toast('请先描述一下自己');return;}
+  const btn=document.getElementById('ep-txt');
+  btn.innerHTML='<span class="spin"></span>提炼中…';
+  const prompt=`用户用自然语言描述了自己的身材特征和穿衣风格偏好，请帮她提炼成：
+1. 一段简洁的"风格档案"（2-3句话，供AI参考用）
+2. 6-8个标签（每个标签4-8字，简洁精准）
+
+用户描述：${input}
+
+请只返回JSON格式，不要其他内容：
+{"raw":"...","chips":["...","..."]}`;
+  try{
+    const res=await callAPI(prompt,600);
+    const clean=res.replace(/```json|```/g,'').trim();
+    const data=JSON.parse(clean);
+    profile={raw:data.raw,chips:data.chips};
+    localStorage.setItem('wProfile',JSON.stringify(profile));
+    renderProfile();
+    document.getElementById('profile-input').value='';
+    document.getElementById('profile-edit-area').classList.remove('show');
+    document.getElementById('edit-btn').textContent='用自然语言更新档案';
+    toast('风格档案已更新！');
+  }catch(e){toast('提炼失败，请重试');}
+  btn.textContent='AI 提炼风格标签';
+}
+
+async function runAutoAnalysis(){
+  const box=document.getElementById('auto-out');
+  box.classList.add('loading');
+  box.innerHTML='<span class="spin"></span>正在分析你的穿搭规律…';
+  if(!logs.length){box.classList.remove('loading');box.textContent='还没有穿搭记录，先去记录几套再来分析吧。';return;}
+  const logSummary=buildLogSummary();
+  const inspoSummary=inspos.length?'灵感板：'+inspos.slice(0,5).map(i=>i.note).join('；'):'';
+  const prompt=`${getProfileText()}\n\n${logSummary}\n${inspoSummary}\n\n请作为一个懂穿搭的朋友，主动分析用户的穿搭记录，找出以下问题：
+1. 她哪类穿搭好看率最高，为什么？
+2. 有没有发现她重复踩坑的地方（比如总买类似的、某类穿搭总不好看）？
+3. 给一个最具体的改进建议，要针对她的真实记录，不要泛泛而谈。
+
+语气像朋友，直接说发现了什么，不要客套，3-5句话，简洁有料。`;
+  const res=await callAPI(prompt,800);
+  box.classList.remove('loading');
+  box.textContent=res||'分析失败，请重试。';
+}
+
+async function ask(type,el){
+  document.querySelectorAll('.qb').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const box=document.getElementById('ai-out');
+  box.className='ai-out show';
+  box.innerHTML='<span class="spin"></span>思考中…';
+  const logSummary=buildLogSummary();
+  let prompt='';
+  if(type==='outfit'){
+    prompt=`${getProfileText()}\n\n${logSummary}\n\n请给出今天具体的两套穿搭建议（职场+日常各一套）。要结合她已有的穿搭记录，如果记录里有好看的单品或组合，可以在此基础上变化。每套说清楚具体穿什么、为什么适合她。语气像朋友，简洁实用。`;
+  }else if(type==='gap'){
+    prompt=`${getProfileText()}\n\n${logSummary}\n\n根据她的穿搭记录和风格档案，判断她衣橱里最缺哪2-3件单品。要具体说缺什么款式（比如不是"缺一件白衬衫"，而是"缺一件有领型设计的奶白色宽松衬衫，法式翻领或V领，面料要有垂感"），以及能怎么搭配她已有的衣服。`;
+  }else if(type==='buy'){
+    prompt=`${getProfileText()}\n\n${logSummary}\n\n用户想知道怎么判断一件衣服值不值得买。请根据她的具体情况，给出一个"买之前问自己的3个问题"，要针对她容易踩坑的地方（比如被博主影响、买类似款等），实用具体，不要废话。`;
+  }
+  const res=await callAPI(prompt,900);
+  box.textContent=res||'没有收到回复，请重试。';
+}
+
+async function askCustom(){
+  const q=document.getElementById('ai-q').value.trim();
+  if(!q)return;
+  const box=document.getElementById('ai-out');
+  box.className='ai-out show';
+  box.innerHTML='<span class="spin"></span>思考中…';
+  const logSummary=buildLogSummary();
+  const prompt=`${getProfileText()}\n\n${logSummary}\n\n用户问：${q}\n\n请结合她的真实穿搭记录和风格档案给出建议，要具体，不要泛泛而谈。3-5句话，像朋友一样直接说。`;
+  const res=await callAPI(prompt,900);
+  box.textContent=res||'没有收到回复，请重试。';
+}
+
+function buildLogSummary(){
+  if(!logs.length)return'暂无穿搭记录。';
+  const good=logs.filter(r=>r.rating==='g');
+  const ok=logs.filter(r=>r.rating==='o');
+  const bad=logs.filter(r=>r.rating==='b');
+  let s='穿搭记录（共'+logs.length+'套）：';
+  if(good.length)s+='\n【好看的】'+good.map(l=>`[${l.tag==='work'?'职场':'日常'}] ${l.note}`).join('；');
+  if(ok.length)s+='\n【一般的】'+ok.map(l=>`[${l.tag==='work'?'职场':'日常'}] ${l.note}`).join('；');
+  if(bad.length)s+='\n【不太行的】'+bad.map(l=>`[${l.tag==='work'?'职场':'日常'}] ${l.note}`).join('；');
+  return s;
+}
+
+let mmApiKey = localStorage.getItem('mmKey') || '';
+
+function saveMMKey(){
+  const val = document.getElementById('mm-key').value.trim();
+  if(!val){toast('请填入 Key');return;}
+  mmApiKey = val;
+  localStorage.setItem('mmKey', val);
+  document.getElementById('key-input-row').style.display='none';
+  document.getElementById('key-saved-row').style.display='flex';
+  toast('Key 已保存');
+}
+
+function clearMMKey(){
+  mmApiKey='';
+  localStorage.removeItem('mmKey');
+  document.getElementById('mm-key').value='';
+  document.getElementById('key-input-row').style.display='flex';
+  document.getElementById('key-saved-row').style.display='none';
+}
+
+function initKeyUI(){
+  if(mmApiKey){
+    document.getElementById('key-input-row').style.display='none';
+    document.getElementById('key-saved-row').style.display='flex';
+  }
+}
+
+async function callAPI(prompt, maxTokens){
+  if(!mmApiKey){ return '请先在上方填入 MiniMax API Key。'; }
+  try{
+    const res = await fetch('https://api.minimax.io/v1/text/chatcompletion_v2', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + mmApiKey
+      },
+      body: JSON.stringify({
+        model: 'MiniMax-M2.5',
+        max_tokens: maxTokens,
+        messages: [
+          { role: 'system', name: 'MiniMax AI', content: '你是一个懂穿搭的朋友，熟悉中国女性的审美和购物习惯，回答简洁实用，语气自然亲切。' },
+          { role: 'user', name: 'User', content: prompt }
+        ]
+      })
+    });
+    if(!res.ok){
+      const err = await res.json().catch(()=>({}));
+      return '错误 ' + res.status + '：' + (err.base_resp?.status_msg || err.error?.message || res.statusText);
+    }
+    const data = await res.json();
+    if(data.base_resp && data.base_resp.status_code !== 0) return '错误：' + data.base_resp.status_msg;
+    if(data.choices && data.choices[0]) return data.choices[0].message.content;
+    return '没有收到回复，请重试。';
+  } catch(e) {
+    return '请求失败（' + e.message + '），请检查 Key 或网络连接。';
+  }
+}
+
+renderProfile();
+initKeyUI();
+</script>
+</body>
+</html>
